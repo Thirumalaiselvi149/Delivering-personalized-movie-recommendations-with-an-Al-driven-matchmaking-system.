@@ -1,0 +1,29 @@
+# app.py
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List
+import main
+
+app = FastAPI()
+
+class UserProfile(BaseModel):
+    user_id: str
+    favorite_genres: List[str]
+
+class Feedback(BaseModel):
+    user_id: str
+    movie_id: int
+    liked: bool
+
+@app.post("/profile")
+def profile_endpoint(profile: UserProfile):
+    return main.create_profile(profile.user_id, profile.favorite_genres)
+
+@app.get("/recommendations")
+def recommendations_endpoint(user_id: str):
+    return main.recommend_movies(user_id)
+
+@app.post("/feedback")
+def feedback_endpoint(feedback: Feedback):
+    return main.process_feedback(feedback.user_id, feedback.movie_id, feedback.liked)
